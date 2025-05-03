@@ -44,6 +44,41 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Test Print Label
+    const testPrintLabelBtn = document.getElementById('test-print-label-btn');
+    if (testPrintLabelBtn) {
+        testPrintLabelBtn.addEventListener('click', function() {
+            const printerIp = document.getElementById('printer_ip').value;
+            const printerPort = document.getElementById('printer_port').value || 9100;
+            
+            if (!printerIp) {
+                showAlert('Please enter a printer IP address before printing a test label', 'danger');
+                return;
+            }
+            
+            showAlert('Printing test label...', 'info');
+            
+            fetch('/api/test-print-label', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                } else {
+                    showAlert(data.message, 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                showAlert('Error printing test label', 'danger');
+            });
+        });
+    }
+    
     // Test WooCommerce Connection
     const testWooBtn = document.getElementById('test-woocommerce-btn');
     if (testWooBtn) {
