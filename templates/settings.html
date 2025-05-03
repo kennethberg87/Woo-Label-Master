@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card bg-dark shadow-sm mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">
+                    <i class="fas fa-cog me-2"></i>
+                    System Settings
+                </h3>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('settings') }}">
+                    <h4 class="mb-3">
+                        <i class="fab fa-wordpress text-info settings-icon"></i>
+                        WooCommerce API Settings
+                    </h4>
+                    <div class="row mb-4">
+                        <div class="col-md-12 form-group">
+                            <label for="woocommerce_url" class="form-label">WooCommerce Store URL</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-link"></i></span>
+                                <input type="url" class="form-control" id="woocommerce_url" name="woocommerce_url" placeholder="https://yourstore.com" value="{{ settings.woocommerce_url if settings else '' }}">
+                            </div>
+                            <small class="form-text text-muted">Enter your WooCommerce store URL</small>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="woocommerce_consumer_key" class="form-label">Consumer Key</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-key"></i></span>
+                                <input type="text" class="form-control" id="woocommerce_consumer_key" name="woocommerce_consumer_key" value="{{ settings.woocommerce_consumer_key if settings else '' }}" placeholder="ck_xxxxxxxxxxxxxxxxxxxx">
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="woocommerce_consumer_secret" class="form-label">Consumer Secret</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <input type="password" class="form-control" id="woocommerce_consumer_secret" name="woocommerce_consumer_secret" value="{{ settings.woocommerce_consumer_secret if settings else '' }}" placeholder="cs_xxxxxxxxxxxxxxxxxxxx">
+                            </div>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <button type="button" class="btn btn-outline-info" id="test-woocommerce-btn">
+                                <i class="fas fa-vial me-1"></i> Test Connection
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h4 class="mb-3">
+                        <i class="fas fa-print text-warning settings-icon"></i>
+                        Printer Settings
+                    </h4>
+                    <div class="row mb-4">
+                        <div class="col-md-6 form-group">
+                            <label for="printer_ip" class="form-label">Printer IP Address</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-network-wired"></i></span>
+                                <input type="text" class="form-control" id="printer_ip" name="printer_ip" placeholder="192.168.1.100" value="{{ settings.printer_ip if settings else '' }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="printer_port" class="form-label">Printer Port</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-plug"></i></span>
+                                <input type="number" class="form-control" id="printer_port" name="printer_port" placeholder="9100" value="{{ settings.printer_port if settings else 9100 }}">
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group">
+                            <label for="label_width" class="form-label">Label Width (mm)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-ruler-horizontal"></i></span>
+                                <select class="form-select" id="label_width" name="label_width">
+                                    <option value="12" {% if settings and settings.label_width == '12' %}selected{% endif %}>12mm</option>
+                                    <option value="29" {% if settings and settings.label_width == '29' %}selected{% endif %}>29mm</option>
+                                    <option value="38" {% if settings and settings.label_width == '38' %}selected{% endif %}>38mm</option>
+                                    <option value="50" {% if settings and settings.label_width == '50' %}selected{% endif %}>50mm</option>
+                                    <option value="54" {% if settings and settings.label_width == '54' %}selected{% endif %}>54mm</option>
+                                    <option value="62" {% if settings and settings.label_width == '62' %}selected{% endif %}>62mm</option>
+                                    <option value="custom" {% if settings and settings.label_width not in ['12', '29', '38', '50', '54', '62'] %}selected{% endif %}>Custom</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6 form-group {% if not settings or settings.label_width in ['12', '29', '38', '50', '54', '62'] %}d-none{% endif %}" id="label-height-group">
+                            <label for="label_height" class="form-label">Label Height (mm or AUTO)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-ruler-vertical"></i></span>
+                                <input type="text" class="form-control" id="label_height" name="label_height" placeholder="AUTO" value="{{ settings.label_height if settings else 'AUTO' }}">
+                            </div>
+                            <small class="form-text text-muted">Enter a number in mm or "AUTO" for continuous labels</small>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <button type="button" class="btn btn-outline-warning" id="test-printer-btn">
+                                <i class="fas fa-vial me-1"></i> Test Printer Connection
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h4 class="mb-3">
+                        <i class="fas fa-folder-open text-success settings-icon"></i>
+                        File Settings
+                    </h4>
+                    <div class="row mb-4">
+                        <div class="col-md-12 form-group">
+                            <label for="image_directory" class="form-label">Label Images Directory</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-folder"></i></span>
+                                <input type="text" class="form-control" id="image_directory" name="image_directory" placeholder="/path/to/labels" value="{{ settings.image_directory if settings else '' }}">
+                            </div>
+                            <small class="form-text text-muted">Directory containing BMP label images named with product SKUs</small>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h4 class="mb-3">
+                        <i class="fas fa-stopwatch text-primary settings-icon"></i>
+                        Polling Settings
+                    </h4>
+                    <div class="row mb-4">
+                        <div class="col-md-6 form-group">
+                            <label for="poll_interval" class="form-label">Poll Interval (seconds)</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="fas fa-clock"></i></span>
+                                <input type="number" class="form-control" id="poll_interval" name="poll_interval" placeholder="60" value="{{ settings.poll_interval if settings else 60 }}">
+                            </div>
+                            <small class="form-text text-muted">How often to check for new orders (in seconds)</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save me-1"></i> Save Settings
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

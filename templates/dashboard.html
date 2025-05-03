@@ -1,0 +1,120 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card bg-dark shadow-sm mb-4">
+            <div class="card-header">
+                <h3 class="mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Dashboard
+                </h3>
+            </div>
+            <div class="card-body">
+                <!-- Summary Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-4">
+                        <div class="card bg-dark stat-card h-100">
+                            <div class="card-body text-center">
+                                <i class="fas fa-shopping-cart text-info fa-3x mb-2"></i>
+                                <h5>Total Orders Processed</h5>
+                                <h2 class="mb-0">{{ orders|length }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-dark stat-card h-100">
+                            <div class="card-body text-center">
+                                {% set printed_count = orders|selectattr('printed', 'eq', true)|list|length %}
+                                <i class="fas fa-check-circle text-success fa-3x mb-2"></i>
+                                <h5>Labels Printed</h5>
+                                <h2 class="mb-0" id="printed-count" data-count="{{ printed_count }}">{{ printed_count }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card bg-dark stat-card h-100">
+                            <div class="card-body text-center">
+                                {% set failed_count = orders|selectattr('printed', 'eq', false)|list|length %}
+                                <i class="fas fa-times-circle text-danger fa-3x mb-2"></i>
+                                <h5>Print Failures</h5>
+                                <h2 class="mb-0" id="failed-count" data-count="{{ failed_count }}">{{ failed_count }}</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts -->
+                <div class="row mb-4">
+                    <div class="col-md-6">
+                        <div class="card bg-dark h-100">
+                            <div class="card-body">
+                                <canvas id="print-status-chart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="card bg-dark h-100">
+                            <div class="card-body">
+                                <canvas id="orders-timeline-chart"></canvas>
+                                <div id="orders-data" data-orders="{{ orders|tojson }}" style="display: none;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Orders Table -->
+                <div class="card bg-dark">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Order History</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-dark table-striped table-order-history">
+                                <thead>
+                                    <tr>
+                                        <th>Order ID</th>
+                                        <th>SKU</th>
+                                        <th>Product</th>
+                                        <th>Timestamp</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    <tr class="{% if order.printed %}order-success{% else %}order-failure{% endif %}">
+                                        <td>{{ order.order_id }}</td>
+                                        <td>{{ order.sku }}</td>
+                                        <td>{{ order.product_name }}</td>
+                                        <td>{{ order.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                        <td>
+                                            {% if order.printed %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i> Printed
+                                            </span>
+                                            {% else %}
+                                            <span class="badge bg-danger" data-bs-toggle="tooltip" title="{{ order.error_message }}">
+                                                <i class="fas fa-times me-1"></i> Failed
+                                            </span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% else %}
+                                    <tr>
+                                        <td colspan="5" class="text-center">No order history available</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+{% endblock %}
