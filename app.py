@@ -133,6 +133,47 @@ def test_woocommerce():
     success, message = test_woocommerce_connection(url, consumer_key, consumer_secret)
     return jsonify({'success': success, 'message': message})
 
+@app.route('/api/test-print-label', methods=['POST'])
+def test_print_label():
+    """Test print a label to verify printer functionality"""
+    from printer_service import print_label
+    import os
+    
+    test_label_path = os.path.join(os.getcwd(), 'labels', 'TEST-LABEL.bmp')
+    
+    # Check if the test label exists
+    if not os.path.isfile(test_label_path):
+        # Try to create it if it doesn't exist
+        try:
+            from create_test_label import create_test_label
+            test_label_path = create_test_label()
+        except Exception as e:
+            logger.error(f"Error creating test label: {e}")
+            return jsonify({
+                'success': False, 
+                'message': f"Test label not found and couldn't be created: {str(e)}"
+            })
+    
+    # Try to print the test label
+    success, message = print_label(test_label_path)
+    
+    # Record the test print in the order history
+    try:
+        history = OrderHistory(
+            order_id=0,
+            sku="TEST-LABEL",
+            product_name="Test Print Label",
+            printed=success,
+            error_message=None if success else message
+        )
+        db.session.add(history)
+        db.session.commit()
+    except Exception as e:
+        logger.error(f"Error recording test print: {e}")
+        # Don't return error here, as the print might have succeeded
+    
+    return jsonify({'success': success, 'message': message})
+
 with app.app_context():
     # Make sure to import the models here or their tables won't be created
     import models  # noqa: F401
