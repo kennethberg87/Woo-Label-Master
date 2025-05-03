@@ -4,12 +4,46 @@ import logging
 from PIL import Image
 from brother_ql.raster import BrotherQLRaster
 from brother_ql.brother_ql_create import create_label
-from brother_ql.backends.helpers import send
+# Instead of using the built-in send function, we'll implement our own
+# from brother_ql.backends.helpers import send
 from models import Settings
 
 # Configure logging
 logging.basicConfig(level=logging.DEBUG)
 logger = logging.getLogger(__name__)
+
+def send_to_printer(printer_data, printer_ip, printer_port=9100):
+    """
+    Send data directly to a networked printer via TCP/IP.
+    This function replaces the brother_ql.backends.helpers.send function
+    which doesn't implement TCP/IP socket printing.
+    """
+    logger.debug(f"Attempting to send {len(printer_data)} bytes to {printer_ip}:{printer_port}")
+    try:
+        # Create a TCP socket
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        sock.settimeout(10)  # 10-second timeout
+        
+        # Connect to the printer
+        sock.connect((printer_ip, printer_port))
+        
+        # Send the data
+        sock.sendall(printer_data)
+        
+        # Close the connection
+        sock.close()
+        
+        logger.debug("Data sent successfully to printer")
+        return {"status": True, "message": "Data sent successfully to printer"}
+    except socket.timeout:
+        logger.error(f"Connection to {printer_ip}:{printer_port} timed out")
+        return {"status": False, "error": "Connection to printer timed out"}
+    except socket.error as e:
+        logger.error(f"Socket error while sending data to printer: {e}")
+        return {"status": False, "error": f"Socket error: {str(e)}"}
+    except Exception as e:
+        logger.error(f"Error sending data to printer: {e}")
+        return {"status": False, "error": str(e)}
 
 def get_printer_settings():
     """Get printer settings from the database"""
@@ -82,7 +116,8 @@ def print_label(image_path):
         
         # Send the print job to the printer
         try:
-            status = send(instructions, printer_ip, printer_port)
+            # Use our custom send_to_printer function instead of the standard send function
+            status = send_to_printer(instructions, printer_ip, printer_port)
             
             if status["status"]:
                 logger.info(f"Successfully printed label: {image_path}")
