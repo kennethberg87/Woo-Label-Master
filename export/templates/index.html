@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card bg-dark shadow-sm mb-4">
+            <div class="card-body text-center py-5">
+                <h1 class="display-5 mb-4">
+                    <i class="fas fa-print text-primary me-2"></i>
+                    WooCommerce Label Printer
+                </h1>
+                <p class="lead">Automatically print product labels from your WooCommerce orders</p>
+                <hr class="my-4">
+                <p>Monitor WooCommerce orders, match SKUs to label images, and print them automatically to your Brother label printer.</p>
+                <div class="mt-4">
+                    <a href="/settings" class="btn btn-primary me-2">
+                        <i class="fas fa-cog me-1"></i> Configure Settings
+                    </a>
+                    <a href="/dashboard" class="btn btn-outline-light">
+                        <i class="fas fa-chart-line me-1"></i> View Dashboard
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-md-4">
+                <div class="card bg-dark shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-shopping-cart text-info fa-3x mb-3"></i>
+                        <h4>Order Monitoring</h4>
+                        <p>Automatically polls your WooCommerce store for new orders at configurable intervals.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-dark shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-barcode text-success fa-3x mb-3"></i>
+                        <h4>SKU Matching</h4>
+                        <p>Extracts SKUs from orders and matches them with your local label image files.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card bg-dark shadow-sm h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-print text-warning fa-3x mb-3"></i>
+                        <h4>Label Printing</h4>
+                        <p>Automatically prints matching label images to your Brother QL-720NW printer.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

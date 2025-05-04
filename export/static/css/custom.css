@@ -1,0 +1,56 @@
+/* Custom CSS - minimal overrides for the Replit theme */
+
+/* Add some additional spacing for form elements */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+/* Add subtle borders to cards */
+.card {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Custom styling for dashboard stats */
+.stat-card {
+    transition: transform 0.2s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+}
+
+/* Table styling for order history */
+.table-order-history th {
+    border-bottom-width: 2px;
+}
+
+.order-success {
+    background-color: rgba(75, 192, 192, 0.1);
+}
+
+.order-failure {
+    background-color: rgba(255, 99, 132, 0.1);
+}
+
+/* Custom Footer */
+.footer {
+    margin-top: 3rem;
+    padding: 1.5rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Settings page icons */
+.settings-icon {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+    vertical-align: middle;
+}
+
+/* Alert positioning */
+#alert-placeholder {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 9999;
+    max-width: 350px;
+}
